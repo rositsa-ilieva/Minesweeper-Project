@@ -272,16 +272,24 @@ void revealMines(char** realBoard, char** displayBoard, size_t N)
 	printBoard(displayBoard, N); 
 }
 
-bool winCondition(char** displayBoard, size_t N)
+bool winCondition(char** displayBoard, char** realBoard, size_t N, int mines)
 {
+	int count = 0;
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = 0; j < N; j++)
 		{
-			if (displayBoard[i][j] != UNOPENED_SYMBOL)
-				return true;
+			if (displayBoard[i][j] == FLAG_BOX && realBoard[i][j] == MINE_SYMBOL)
+				count++;
+
+			/*else if(displayBoard[i][j] == UNOPENED_SYMBOL && realBoard[i][j] == MINE_SYMBOL)
+				count++;*/
 		}
 	}
+	if (count == mines)
+		return true;
+
+	else
 	return false;
 }
 bool loseCondition(char** displayBoard, size_t N)
@@ -335,13 +343,16 @@ void isNeighbourBoxZero(int row, int col, char** realBoard, char** displayBoard,
 	{
 		for (int j = col - 1; j <= col + 1; j++)
 		{
-			if (i == row && j == col)
-				continue;
-
-			if (realBoard[i][j] == ZERO_BOX && displayBoard[i][j] == UNOPENED_SYMBOL && realBoard[i][j] != MINE_SYMBOL)
+			if (i >= 0 && j >= 0 && i < N && j < N)
 			{
-				revealNeighboursWhenZero(i, j, realBoard, displayBoard, N);
-				break;
+				if (i == row && j == col)
+					continue;
+
+				if (realBoard[i][j] == ZERO_BOX /*&& displayBoard[i][j] == UNOPENED_SYMBOL*/ /*&& realBoard[i][j] != MINE_SYMBOL*/)
+				{
+					revealNeighboursWhenZero(i, j, realBoard, displayBoard, N);
+					break;
+				}
 			}
 		}
 	}
@@ -624,6 +635,16 @@ int main()
 		printBoard(displayBoard, N);
 		printBoard(realBoard, N);
 		playerInput(row, col, realBoard, displayBoard, N);
+
+		if (loseCondition(displayBoard,N) == true)
+		{
+			break;
+		}
+		if (winCondition(displayBoard, realBoard, N, mines) == true)
+		{
+			cout << "YOU WON" << endl;
+			break;
+		}
 	}
     
 	free(displayBoard, N);
