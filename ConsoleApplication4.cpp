@@ -279,9 +279,6 @@ bool winCondition(char** displayBoard, char** realBoard, size_t N, int mines)
 		{
 			if (displayBoard[i][j] == FLAG_BOX && realBoard[i][j] == MINE_SYMBOL)
 				count++;
-
-			/*else if(displayBoard[i][j] == UNOPENED_SYMBOL && realBoard[i][j] == MINE_SYMBOL)
-				count++;*/
 		}
 	}
 	if (count == mines)
@@ -569,36 +566,32 @@ void playerInput(int row, int col, char** realBoard, char** displayBoard, size_t
 		
 }
 
-void playMinesweeper(char** displayBoard, char** realBoard, size_t N, int mines , int x , int y)
+bool areAllBoxesOpened(char** displayBoard, size_t N)
 {
-	bool gameOver = false;
-	int currentMoveIndex = 0;
-
-	initializeDisplayBoard(displayBoard, UNOPENED_BOX, N);
-	placeMines(realBoard, N, mines);
-
-	while (gameOver == false)
+	bool condition = true;
+	while (true)
 	{
-		printBoard(displayBoard, N);
-		playerInput(x,y,realBoard,displayBoard,N);
-
-		if (currentMoveIndex == 0)
-		{
-			/*if (isMine(x, y, realBoard) == true)
-			{
-
-			}*/
-		}
-
-		currentMoveIndex++;
-
-		
-
-
+		for (int i = 0; i < N; i++)
+	    {
+		    for (int j = 0; j < N; j++)
+		    {
+		    	if (displayBoard[i][j] != UNOPENED_BOX)
+		    	{
+		    		condition = true;
+		    		return true;
+		    	}
+		    	else
+		    	{
+		    		condition = false;
+		    		return false;
+		    		break;
+		    	}
+		    }
+	    }
 	}
-
+	
+	return false;
 }
-
 
 int main()
 {
@@ -638,9 +631,10 @@ int main()
 		{
 			break;
 		}
-		if (winCondition(displayBoard, realBoard, N, mines) == true)
+		if (winCondition(displayBoard, realBoard, N, mines) == true && areAllBoxesOpened(displayBoard,N) == true)
 		{
-			cout << "YOU WON" << endl;
+			printBoard(displayBoard,N);
+			cout << "~ YOU WON ~" << endl;
 			break;
 		}
 	}
