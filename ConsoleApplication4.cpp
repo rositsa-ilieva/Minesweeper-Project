@@ -16,10 +16,9 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
-//#pragma warning( disable : 4996)
 using namespace std;
 
-const char UNOPENED_SYMBOL = ' ';
+const char UNOPENED_BOX = ' ';
 const char MINE_SYMBOL = '*';
 const char ZERO_BOX = '0';
 const char EMPTY_BOX = '-';
@@ -223,7 +222,6 @@ char countNeighbourMines(int row, int col, char** realBoard, size_t N)
 
 }
 
-
 void placeCountOfMines(int row, int col, char** realBoard, size_t N)
 {
 	for (int row = 0; row < N; row++)
@@ -307,7 +305,7 @@ bool loseCondition(char** displayBoard, size_t N)
 
 void revealNeighboursWhenZero(int row, int col, char** realBoard, char** displayBoard, size_t N)
 {
-	if (displayBoard[row][col] == UNOPENED_SYMBOL)
+	if (displayBoard[row][col] == UNOPENED_BOX)
 		displayBoard[row][col] = realBoard[row][col]; 
 
 	if (displayBoard[row][col] == ZERO_BOX)
@@ -322,7 +320,7 @@ void revealNeighboursWhenZero(int row, int col, char** realBoard, char** display
 				if (i == row && j == col) // the box is already opened 
 					continue;
 
-				if (displayBoard[i][j] == UNOPENED_SYMBOL && realBoard[i][j] != MINE_SYMBOL)
+				if (displayBoard[i][j] == UNOPENED_BOX && realBoard[i][j] != MINE_SYMBOL)
 				{
 					displayBoard[i][j] = realBoard[i][j];
 
@@ -383,7 +381,7 @@ void openBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 		        }
 
 			if (displayBoard[row][col] != FLAG_BOX && realBoard[row][col] != MINE_SYMBOL &&
-				displayBoard[row][col] == UNOPENED_SYMBOL && realBoard[row][col] != ZERO_BOX &&
+				displayBoard[row][col] == UNOPENED_BOX && realBoard[row][col] != ZERO_BOX &&
 				isValidCoordinate(row, col, N))
 			    {
 			    	displayBoard[row][col] = realBoard[row][col];
@@ -392,7 +390,7 @@ void openBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 			    	break;
 			    }
 
-			else if (realBoard[row][col] == ZERO_BOX && displayBoard[row][col] == UNOPENED_SYMBOL &&
+			else if (realBoard[row][col] == ZERO_BOX && displayBoard[row][col] == UNOPENED_BOX &&
 					isValidCoordinate(row, col, N))
 				{
 					revealNeighboursWhenZero(row, col, realBoard, displayBoard, N);
@@ -400,7 +398,7 @@ void openBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 					break;
 				}
 
-		    else if (realBoard[row][col] == MINE_SYMBOL && displayBoard[row][col] == UNOPENED_SYMBOL &&
+		    else if (realBoard[row][col] == MINE_SYMBOL && displayBoard[row][col] == UNOPENED_BOX &&
 						isValidCoordinate(row, col, N))
 				{
 					revealMines(realBoard, displayBoard, N);
@@ -409,7 +407,7 @@ void openBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 					break;
 				}
 
-			else if (displayBoard[row][col] != UNOPENED_SYMBOL && displayBoard[row][col] != FLAG_BOX &&
+			else if (displayBoard[row][col] != UNOPENED_BOX && displayBoard[row][col] != FLAG_BOX &&
 							isValidCoordinate(row, col, N))
 				 {
 				     cout << "THE BOX IS ALREADY OPENED !!" << endl;
@@ -450,7 +448,7 @@ void flagBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 			break;
 		}
 
-		else if (displayBoard[row][col] == UNOPENED_SYMBOL && isValidCoordinate(row, col, N))
+		else if (displayBoard[row][col] == UNOPENED_BOX && isValidCoordinate(row, col, N))
 		{
 			displayBoard[row][col] = FLAG_BOX;
 			flagedBox = true;
@@ -465,7 +463,7 @@ void flagBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 
 		}
 
-		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_SYMBOL &&
+		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_BOX &&
 			isValidCoordinate(row, col, N))
 		{
 			cout << "THE BOX IS ALREDY OPENED." << endl;
@@ -497,7 +495,7 @@ void unflagBox(int row, int col, char** realBoard, char** displayBoard, size_t N
 
 		else if (displayBoard[row][col] == FLAG_BOX && isValidCoordinate(row, col, N))
 		{
-			displayBoard[row][col] = UNOPENED_SYMBOL;
+			displayBoard[row][col] = UNOPENED_BOX;
 			unFlagedBox = true;
 			break;
 		}
@@ -509,7 +507,7 @@ void unflagBox(int row, int col, char** realBoard, char** displayBoard, size_t N
 			continue;
 		}
 
-		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_SYMBOL &&
+		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_BOX &&
 			isValidCoordinate(row, col, N))
 		{
 			cout << "THE BOX IS ALREDY OPENED." << endl;
@@ -576,7 +574,7 @@ void playMinesweeper(char** displayBoard, char** realBoard, size_t N, int mines 
 	bool gameOver = false;
 	int currentMoveIndex = 0;
 
-	initializeDisplayBoard(displayBoard, UNOPENED_SYMBOL, N);
+	initializeDisplayBoard(displayBoard, UNOPENED_BOX, N);
 	placeMines(realBoard, N, mines);
 
 	while (gameOver == false)
@@ -624,8 +622,8 @@ int main()
 	char** displayBoard = createField(N);
 	char** realBoard = createField(N);
 
-	initializeDisplayBoard(displayBoard, UNOPENED_SYMBOL, N);
-	initializeRealBoard(realBoard, UNOPENED_SYMBOL, N);
+	initializeDisplayBoard(displayBoard, UNOPENED_BOX, N);
+	initializeRealBoard(realBoard, UNOPENED_BOX, N);
 	
 	placeMines(realBoard,N,mines);
 	placeCountOfMines(row, col, realBoard, N);
@@ -633,7 +631,7 @@ int main()
 	while (true)
 	{
 		printBoard(displayBoard, N);
-		printBoard(realBoard, N);
+		/*printBoard(realBoard, N);*/
 		playerInput(row, col, realBoard, displayBoard, N);
 
 		if (loseCondition(displayBoard,N) == true)
