@@ -1,41 +1,58 @@
-﻿#include <iostream>
+﻿/**
+*
+* Solution to course project # 7
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2022/2023
+*
+* @author Rositsa Ilieva
+* @idnumber 6MI0600209
+* @compiler VC
+*
+* <Minesweeper>
+*
+*/
+
+#include <iostream>
 #include <iomanip>
 #include <cstdlib>
-#pragma warning( disable : 4996)
 using namespace std;
 
-const char UNOPENED_SYMBOL = ' ';
+const char UNOPENED_BOX = ' ';
 const char MINE_SYMBOL = '*';
 const char ZERO_BOX = '0';
 const char EMPTY_BOX = '-';
 const char FLAG_BOX = 'F';
-const char UNFLAG_BOX = 'U';
 
+//validation for the dimention
 void isDimensionValid(int &N)
 {
+	//function to check if the dimention is in the range
 	int newN = 0;
 	while (N < 3 || N > 10)
 	{
 		cout << "THE VALUE IS OUT OF RANGE. PLEASE ENTER NEW ONE.";
 		cout << endl;
-		cin >> newN;
+		cin >> newN; // if it is not valid, enter new one
 		N = newN;
 	}
 	cout << "YOUR FIELD IS: " << N << " X " << N << endl;
 }
+//validation for the caunt of mines
 void isTheNumOfMinesValid(int &N, int mines)
 {
+	//function to check if the number of mines is in the range
 	while (mines < 1 || mines >(3 * N))
 	{
 		cout << "THE VALUE IS OUT OF RANGE. PLEASE ENTER NEW ONE.";
 		cout << endl;
-		cin >> mines;
+		cin >> mines; // if the number is not in the range, enter new number
 	}
 
 	cout << "THE NUMBER OF MINES IS: " << mines << endl;
 	cout << "----------------------------" << endl;
 }
-
+//creates field
 char** createField(int N)
 {
 	char** field;
@@ -73,36 +90,34 @@ void initializeRealBoard(char** field, char value, size_t N)
 		}
 	}
 }
-
+//prints the board centered on the screen
 void printBoard(char** field, size_t N)
 {
+	//print the board in the middle of the screen
 	cout << endl;
 	for (int i = 0; i < 1; i++)
 	{
 		cout << setw(30);
 		for (int j = 0; j < N; j++)
 		{
-			cout << j  << "      ";
+			cout << j  << "      "; // the numbers in the upper part of the board
 		}
 	}
-	cout << endl;  // the numbers in the upper part of the board
+	cout << endl; 
 
 	cout << setw(27);
 	for (int i = 0; i < N * 7; i++)
 		{
-			cout << "_";
+			cout << "_";  //the upper frame of the board
 		}
-	cout << endl << endl;  //the upper frame of the board
-	
-	
-
+	cout << endl << endl; 
 
 	for (int i = 0; i < N; i++)
 	{
 		cout << setw(23) << i << " | ";
 		for (int j = 0; j < N; j++)
 		{
-			cout << " [ " << field[i][j] << " ] ";
+			cout << " [ " << field[i][j] << " ] "; // each box
 		}
 		cout << " | " << i << endl << endl;
 	}
@@ -117,98 +132,40 @@ void free(char** field, size_t N)
 	delete[] field;
 }
 
-
+//checks if a symbol is mine
 bool isMine(int x, int y, char** field)
-{ 
+{
 	return field[x][y] == MINE_SYMBOL;
 }
-
+//checks if the coordinates of the entered values are valid
 bool isValidCoordinate(int x, int y, size_t N)
 {
+	//checks if the coodinates entered are valid or not
 	return ((x >= 0) && (x < N) && 
 		    (y >= 0) && (y < N));
 }
-
+//counts how many mines are around the box
 char countNeighbourMines(int row, int col, char** realBoard, size_t N)
 {
 	char count = ZERO_BOX;
-
-	int right = col + 1;
-	int left = col - 1;
-
-	int down = row + 1;
-	int up = row - 1;
-
-	
-		if (isValidCoordinate(row, left, N) == true)
+		
+	for (int i = row - 1; i <= row + 1; i++)
+	{
+		for (int j = col - 1; j <= col + 1; j++)
 		{
-			if (isMine(row, left, realBoard) == true)
+			if (isValidCoordinate(i, j, N))
 			{
-				count++;
+				if (isMine(i, j, realBoard))
+				{
+					count++;
+				}
 			}
 		}
+	}
 
-		if (isValidCoordinate(row, right, N) == true)
-		{
-			if (isMine(row, right, realBoard) == true)
-			{
-				count++;
-			}
-		}
-
-		if (isValidCoordinate(down, col, N) == true)
-		{
-			if (isMine(down, col, realBoard) == true)
-			{
-				count++;
-			}
-		}
-
-		if (isValidCoordinate(up, col, N) == true)
-		{
-			if (isMine(up, col, realBoard) == true)
-			{
-				count++;
-			}
-		}
-
-		if (isValidCoordinate(down, left, N) == true)
-		{
-			if (isMine(down, left, realBoard) == true)
-			{
-				count++;
-			}
-		}
-
-		if (isValidCoordinate(down, right, N) == true)
-		{
-			if (isMine(down, right, realBoard) == true)
-			{
-				count++;
-			}
-		}
-
-		if (isValidCoordinate(up,left, N) == true)
-		{
-			if (isMine(up,left, realBoard) == true)
-			{
-				count++;
-			}
-		}
-
-		if (isValidCoordinate(up,right, N) == true)
-		{
-			if (isMine(up,right, realBoard) == true)
-			{
-				count++;
-			}
-		}
-	
 	return count;
-
 }
-
-
+//places the number of the mines around a certain box
 void placeCountOfMines(int row, int col, char** realBoard, size_t N)
 {
 	for (int row = 0; row < N; row++)
@@ -221,16 +178,16 @@ void placeCountOfMines(int row, int col, char** realBoard, size_t N)
 	}
 }
 
-
+//places mines randomly on the board
 void placeMines(char** realBoard, size_t N, int mines)
 {
 	int XCoordinate;
 	int YCoordinate;
 
-	for (int i = 1; i <= mines; i++)
+	for (int i = 0; i < mines; i++)
 	{
-		XCoordinate = rand() % N;
-		YCoordinate = rand() % N;
+		XCoordinate = rand() % N; // x coordinate is in the range of 0 and N-1
+		YCoordinate = rand() % N; // y coordinate is in the range of 0 and N-1
 
 		while (isMine(XCoordinate, YCoordinate, realBoard))
 		{
@@ -243,18 +200,36 @@ void placeMines(char** realBoard, size_t N, int mines)
 
 }
 
-bool winCondition(char** displayBoard, size_t N)
+//when you lose the game the mines would be revealed
+void revealMines(char** realBoard, char** displayBoard, size_t N)
 {
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = 0; j < N; j++)
 		{
-			if (displayBoard[i][j] != UNOPENED_SYMBOL)
-				return true;
-			else
-				return false;
+			if (realBoard[i][j] == MINE_SYMBOL) // if there is a mine it would be displayed on the board
+				displayBoard[i][j] = realBoard[i][j];
 		}
 	}
+	printBoard(displayBoard, N); 
+}
+
+bool winCondition(char** displayBoard, char** realBoard, size_t N, int mines)
+{
+	int count = 0;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (displayBoard[i][j] == FLAG_BOX && realBoard[i][j] == MINE_SYMBOL)
+				count++;
+		}
+	}
+	if (count == mines)
+		return true;
+
+	else
+	return false;
 }
 bool loseCondition(char** displayBoard, size_t N)
 {
@@ -264,29 +239,29 @@ bool loseCondition(char** displayBoard, size_t N)
 		{
 			if (displayBoard[i][j] == MINE_SYMBOL)
 				return true;
-			else
-				return false;
 		}
 	}
+	return false;
 }
+//function that reveals all neighbour boxes when they are zero
 void revealNeighboursWhenZero(int row, int col, char** realBoard, char** displayBoard, size_t N)
 {
-	if (displayBoard[row][col] == UNOPENED_SYMBOL)
-		displayBoard[row][col] = realBoard[row][col];
+	if (displayBoard[row][col] == UNOPENED_BOX)
+		displayBoard[row][col] = realBoard[row][col]; 
 
 	if (displayBoard[row][col] == ZERO_BOX)
-		displayBoard[row][col] = EMPTY_BOX;
+		displayBoard[row][col] = EMPTY_BOX; // if the box that you opened doesn't have any mines around it
 
-	for (int i = row - 1; i <= row + 1; i++)
+	for (int i = row - 1; i <= row + 1; i++) 
 	{
 		for (int j = col - 1; j <= col + 1; j++)
 		{
-			if (i >= 0 && j >= 0 && i < N && j < N)
+			if (i >= 0 && j >= 0 && i < N && j < N) // check if the neighbour box is valid coordinate
 			{
-				if (i == row && j == col)
+				if (i == row && j == col) // the box is already opened 
 					continue;
 
-				if (displayBoard[i][j] == UNOPENED_SYMBOL && realBoard[i][j] != MINE_SYMBOL)
+				if (displayBoard[i][j] == UNOPENED_BOX && realBoard[i][j] != MINE_SYMBOL)
 				{
 					displayBoard[i][j] = realBoard[i][j];
 
@@ -301,23 +276,28 @@ void revealNeighboursWhenZero(int row, int col, char** realBoard, char** display
 		}
 	}
 }
+//if you open a box and its neighbour is a zero box then that box should also be opened until there are no zero boxes
 void isNeighbourBoxZero(int row, int col, char** realBoard, char** displayBoard, size_t N)
 {
 	for (int i = row - 1; i <= row + 1; i++)
 	{
 		for (int j = col - 1; j <= col + 1; j++)
 		{
-			if (i == row && j == col)
-				continue;
-
-			if (realBoard[i][j] == ZERO_BOX && displayBoard[i][j] == UNOPENED_SYMBOL && realBoard[i][j] != MINE_SYMBOL)
+			if (i >= 0 && j >= 0 && i < N && j < N)
 			{
-				revealNeighboursWhenZero(i, j, realBoard, displayBoard, N);
-				break;
+				if (i == row && j == col)
+					continue;
+
+				if (realBoard[i][j] == ZERO_BOX /*&& displayBoard[i][j] == UNOPENED_SYMBOL*/ /*&& realBoard[i][j] != MINE_SYMBOL*/)
+				{
+					revealNeighboursWhenZero(i, j, realBoard, displayBoard, N);
+					break;
+				}
 			}
 		}
 	}
 }
+
 void openBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 {
 	bool conditionForOpeningBox = false;
@@ -336,80 +316,52 @@ void openBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 		cin >> col;
 		cout << "----------------------------" << endl;
 
-		    if (isValidCoordinate(row, col, N) == false)
+	    if (isValidCoordinate(row, col, N) == false)
+	        {
+	        	cout << "LOCATION ENTERED IS OUT OF THE SCOPE OF THE BOARD !" << endl;
+	        	break;
+	        }
+
+		if (displayBoard[row][col] != FLAG_BOX && realBoard[row][col] != MINE_SYMBOL &&
+			displayBoard[row][col] == UNOPENED_BOX && realBoard[row][col] != ZERO_BOX &&
+			isValidCoordinate(row, col, N))
 		    {
-		    	cout << "LOCATION ENTERED IS OUT OF THE SCOPE OF THE BOARD !" << endl;
+		    	displayBoard[row][col] = realBoard[row][col];
+		    	isNeighbourBoxZero(row, col, realBoard, displayBoard, N);
+		    	conditionForOpeningBox = false;
 		    	break;
 		    }
 
-			if (displayBoard[row][col] != FLAG_BOX && realBoard[row][col] != MINE_SYMBOL &&
-				displayBoard[row][col] == UNOPENED_SYMBOL && realBoard[row][col] != ZERO_BOX &&
+		else if (realBoard[row][col] == ZERO_BOX && displayBoard[row][col] == UNOPENED_BOX &&
 				isValidCoordinate(row, col, N))
 			{
-				displayBoard[row][col] = realBoard[row][col];
-				isNeighbourBoxZero(row, col, realBoard, displayBoard, N);
+				revealNeighboursWhenZero(row, col, realBoard, displayBoard, N);
 				conditionForOpeningBox = false;
 				break;
 			}
-			else
-			{
-				if (realBoard[row][col] == ZERO_BOX && displayBoard[row][col] == UNOPENED_SYMBOL &&
-					isValidCoordinate(row, col, N))
-				{
-					revealNeighboursWhenZero(row, col, realBoard, displayBoard, N);
-					conditionForOpeningBox = false;
-					break;
-				}
 
-				else
-				{
-					if (realBoard[row][col] == MINE_SYMBOL && displayBoard[row][col] == UNOPENED_SYMBOL &&
+		else if (realBoard[row][col] == MINE_SYMBOL && displayBoard[row][col] == UNOPENED_BOX &&
+				isValidCoordinate(row, col, N))
+		    {
+		    	revealMines(realBoard, displayBoard, N);
+		    	cout << "YOU HIT A MINE!" << endl << "~ GAME OVER ~" << endl;
+		    	loseCondition(displayBoard, N);
+		    	break;
+		    }
+
+		else if (displayBoard[row][col] != UNOPENED_BOX && displayBoard[row][col] != FLAG_BOX &&
 						isValidCoordinate(row, col, N))
-					{
-						cout << "YOU HIT A MINE!" << endl << "~ GAME OVER ~" << endl;
-						loseCondition(displayBoard, N);
-						break;
-					}
+			 {
+			     cout << "THE BOX IS ALREADY OPENED." << endl;
+			     break;
+			 }
 
-					else
-					{
-						if (displayBoard[row][col] != UNOPENED_SYMBOL && displayBoard[row][col] != FLAG_BOX &&
-							isValidCoordinate(row, col, N))
-						   {
-							cout << "THE BOX IS ALREADY OPENED !!" << endl;
-							break;
-						    }
-
-						
-							else
-							{
-								if (displayBoard[row][col] == FLAG_BOX &&
-									isValidCoordinate(row, col, N))
-								{
-									cout << "THE BOX IS FLAGGED, SO YOU CANNOT OPEN IT. TRY UNFLAGGING IT." << endl;
-									conditionForOpeningBox = false;
-								}
-							}
-					}
-
-					if (realBoard[row][col] == MINE_SYMBOL)
-					{
-						displayBoard[row][col] = MINE_SYMBOL;
-						printBoard(displayBoard, N);
-						cout << "YOU HIT A MINE.\n~ GAME OVER ~" << endl;
-
-					}
-
-					else
-					{
-						if (isValidCoordinate(row - 1, col, N) == true)
-						{
-							if (isMine(row - 1, col, realBoard) == false)
-								openBox(row - 1, col, displayBoard, realBoard, N);
-						}
-					}
-				}
-			}
+		else if (displayBoard[row][col] == FLAG_BOX && isValidCoordinate(row, col, N))
+			 {
+			 	cout << "THE BOX IS FLAGGED, SO YOU CANNOT OPEN IT. TRY UNFLAGGING IT." << endl;
+			 	conditionForOpeningBox = false;
+			 	break;
+			 }
 	}
 }
 void flagBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
@@ -431,7 +383,7 @@ void flagBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 			break;
 		}
 
-		else if (displayBoard[row][col] == UNOPENED_SYMBOL && isValidCoordinate(row, col, N))
+		else if (displayBoard[row][col] == UNOPENED_BOX && isValidCoordinate(row, col, N))
 		{
 			displayBoard[row][col] = FLAG_BOX;
 			flagedBox = true;
@@ -446,7 +398,7 @@ void flagBox(int row, int col, char** realBoard, char** displayBoard, size_t N)
 
 		}
 
-		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_SYMBOL &&
+		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_BOX &&
 			isValidCoordinate(row, col, N))
 		{
 			cout << "THE BOX IS ALREDY OPENED." << endl;
@@ -478,31 +430,33 @@ void unflagBox(int row, int col, char** realBoard, char** displayBoard, size_t N
 
 		else if (displayBoard[row][col] == FLAG_BOX && isValidCoordinate(row, col, N))
 		{
-			displayBoard[row][col] = UNOPENED_SYMBOL;
+			displayBoard[row][col] = UNOPENED_BOX;
 			unFlagedBox = true;
 			break;
 		}
-		
-		else if (displayBoard[row][col] != FLAG_BOX && isValidCoordinate(row, col, N))
-		{
-			cout << "THIS BOX IS NOT FLAGGED. TO UNFLAG IT, PLEASE FLAG IT FIRST." << endl;
-			unFlagedBox = true;
-			continue;
-		}
 
-		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_SYMBOL &&
+		else if (displayBoard[row][col] != FLAG_BOX && displayBoard[row][col] != UNOPENED_BOX &&
 			isValidCoordinate(row, col, N))
 		{
 			cout << "THE BOX IS ALREDY OPENED." << endl;
 			unFlagedBox = false;
-			continue;
+			break;
 		}
 
-		break;
+		else if (displayBoard[row][col] != FLAG_BOX && isValidCoordinate(row, col, N))
+		{
+			cout << "THIS BOX IS NOT FLAGGED. TO UNFLAG IT, PLEASE FLAG IT FIRST." << endl;
+			unFlagedBox = true;
+			break;
+		}
+
+		
 	}
 
 
 }
+
+//player is asked to eighter open, flag or unflag the box
 void playerInput(int row, int col, char** realBoard, char** displayBoard, size_t N)
 {
 	int playersChoice;
@@ -550,36 +504,61 @@ void playerInput(int row, int col, char** realBoard, char** displayBoard, size_t
 	}
 		
 }
-void playMinesweeper(char** displayBoard, char** realBoard, size_t N, int mines , int x , int y)
+
+//function to check if all the boxes are opened, if they are and all the mines are flagged you win the game
+bool areAllBoxesOpened(char** displayBoard, size_t N)
 {
-	bool gameOver = false;
-	int currentMoveIndex = 0;
+	bool condition = true;
+	int count = 0;
 
-	initializeDisplayBoard(displayBoard, UNOPENED_SYMBOL, N);
-	placeMines(realBoard, N, mines);
-
-	while (gameOver == false)
+	for (int i = 0; i < N; i++)
 	{
-		printBoard(displayBoard, N);
-		playerInput(x,y,realBoard,displayBoard,N);
-
-		if (currentMoveIndex == 0)
-		{
-			/*if (isMine(x, y, realBoard) == true)
-			{
-
-			}*/
-		}
-
-		currentMoveIndex++;
-
-		
-
-
+	    for (int j = 0; j < N; j++)
+	    {
+	    	if (displayBoard[i][j] != UNOPENED_BOX)
+	    	{
+	  	        count++;
+	    	}
+	    	else
+	    	{
+	  	        continue;
+	    	}
+	    }
 	}
 
+	if (count == N * N)
+	    return true;
+	else
+		return false;
 }
+//a function to play the minesweeper game
+void playMinesweeper(int row, int col, char** realBoard, char** displayBoard, size_t N, int mines)
+{
+	initializeDisplayBoard(displayBoard, UNOPENED_BOX, N);
+	initializeRealBoard(realBoard, UNOPENED_BOX, N);
 
+	placeMines(realBoard, N, mines); // place mines randomly 
+	placeCountOfMines(row, col, realBoard, N); //function to count the number of mines in the neighbour boxes
+
+	while (true) // while the game is not over
+		{
+			printBoard(displayBoard, N); // prints the board that we play on
+			/*printBoard(realBoard, N);*/
+			playerInput(row, col, realBoard, displayBoard, N); // the player is asked to either open,flag or unflag the box
+
+			if (loseCondition(displayBoard,N) == true) // if the player hits a mine the game is over
+			{
+				break;
+			}
+			//if all the flaged boxes match the mines and all boxes are opened you win the game
+			if (winCondition(displayBoard, realBoard, N, mines) == true && areAllBoxesOpened(displayBoard,N) == true) 
+			{
+				printBoard(displayBoard,N);
+				cout << "~ YOU WON ~" << endl;
+				break;
+			}
+		}
+}
 
 int main()
 {
@@ -599,23 +578,13 @@ int main()
 	cout << "----------------------------" << endl;
 	isTheNumOfMinesValid(N, mines);
 
-
 	char** displayBoard = createField(N);
 	char** realBoard = createField(N);
 
-	initializeDisplayBoard(displayBoard, UNOPENED_SYMBOL, N);
-	initializeRealBoard(realBoard, UNOPENED_SYMBOL, N);
 	
-	placeMines(realBoard,N,mines);
-	placeCountOfMines(row, col, realBoard, N);
 
-	while (true)
-	{
-		printBoard(displayBoard, N);
-		/*printBoard(realBoard, N);*/
-		playerInput(row, col, realBoard, displayBoard, N);
-	}
-    
+	playMinesweeper(row, col, realBoard, displayBoard, N, mines);
+	
 	free(displayBoard, N);
 	free(realBoard, N);
 
