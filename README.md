@@ -1,4 +1,4 @@
-# Minesweeper-Project
+# Minesweeper Game
 End-Term Project for the course Introduction to Programming
 
 Целта на играта е да се разкрият вскичи позиции в дадена квадратна матрица, които не са мини.
